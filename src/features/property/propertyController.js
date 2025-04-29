@@ -6,7 +6,7 @@ export default class PropertyController{
 
     async createProperty(req,res,next){
         try {
-            if(req.user.role == owner){
+            if(req.user.role == 'owner'){
                 let ownerId = req.user.userId;
                 let {title,description,city,address,type,rent} = req.body;
                 await this.propertyRepository.createProperty(ownerId,title,description,city,address,type,rent);

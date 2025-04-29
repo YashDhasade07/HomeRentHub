@@ -1,0 +1,13 @@
+import express from "express";
+import FavoriteController from "./favoriteController.js";
+let favRouter = express.Router();
+let favoriteController = new FavoriteController()
+favRouter.post('/', (req,res,next)=>{
+    favoriteController.setFavorite(req,res,next)
+})
+
+favRouter.get('/', (req,res,next)=>{
+    favoriteController.getFavorite(req,res,next)
+})
+export default favRouter;
+
