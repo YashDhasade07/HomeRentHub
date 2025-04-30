@@ -1,10 +1,11 @@
 import express from 'express';
 import RatingController from './ratingController.js';
+import jwtAuthentication from '../../middlewares/jwtAuthentication.js';
 
 let ratingController = new RatingController()
 let ratingRouter = express.Router();
 
-ratingRouter.post('/', (req,res,next)=>{
+ratingRouter.post('/', jwtAuthentication, (req,res,next)=>{
     ratingController.postReview(req,res,next)
 });
 
