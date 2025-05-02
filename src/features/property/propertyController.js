@@ -1,3 +1,5 @@
+import PropertyRepository from "./propertyModel.js";
+
 
 export default class PropertyController{
     constructor(){
@@ -35,7 +37,7 @@ export default class PropertyController{
             let propertey = await this.propertyRepository.getPropertyById(id);
             res.send(propertey)
         } catch (error) {
-            
+
         }
     }
 
@@ -43,7 +45,8 @@ export default class PropertyController{
         try {
             let ownerId = req.user.userId;
             let id = req.params.id;
-            let propertey = await this.propertyRepository.updateProperty(ownerId,id);
+            let status = req.body.status;
+            let propertey = await this.propertyRepository.updateProperty(ownerId,id,status);
             res.send(propertey)
         } catch (error) {
             
@@ -54,8 +57,8 @@ export default class PropertyController{
         try {
             let ownerId = req.user.userId;
             let id = req.params.id;
-            let propertey = await this.propertyRepository.deleteProperty(ownerId,id);
-            res.send(propertey)
+            await this.propertyRepository.deleteProperty(ownerId,id);
+            res.send(`propertey deleted sucessfully`)
         } catch (error) {
             
         }

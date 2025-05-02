@@ -1,3 +1,5 @@
+import BookingRepository from "./bookingModel.js";
+
 export default class BookingController {
   constructor() {
     this.bookingRepository = new BookingRepository();
@@ -24,9 +26,10 @@ export default class BookingController {
 
   async getBookings(req, res, next) {
     try {
-      if (req.user.role == "renter") {
-        let renterId = req.user.userId;
-        let bookings =await this.bookingRepository.getBookings(renterId);
+        if (req.user.role == "renter") {
+            let renterId = req.user.userId;
+            let bookings =await this.bookingRepository.getBookings(renterId);
+            console.log('hiiiiiii');
         res.json(bookings);
       } else {
         res.send("login as renter first");
