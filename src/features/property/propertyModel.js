@@ -1,5 +1,5 @@
 import pool from "../../config/postgres.js";
-
+import ApplicationError from "../../middlewares/ApplicationError.js";
 export default class PropertyRepository {
   constructor() {
     this.pool = pool;
@@ -13,7 +13,9 @@ export default class PropertyRepository {
             `;
       let values = [ownerId, title, description, city, address, type, rent];
       await this.pool.query(query, values);
-    } catch (error) {}
+    } catch (error) {
+        throw ApplicationError('something went wrong while posting property',400)
+    }
   }
 
   async getProperty(filter) {
@@ -33,7 +35,9 @@ export default class PropertyRepository {
 
       const { rows } = await this.pool.query(query, values);
       return rows;
-    } catch (error) {}
+    } catch (error) {
+        throw new ApplicationError('something went wrong while fetching the properties',400)
+    }
   }
 
   async getPropertyById(id) {
@@ -44,7 +48,9 @@ export default class PropertyRepository {
         `;
       let { rows } = await this.pool.query(query, [id]);
       return rows[0];
-    } catch (error) {}
+    } catch (error) {
+        throw new ApplicationError('something went wrong while getting the property',400)
+    }
   }
 
   async updateProperty(ownerId, id, status) {
@@ -57,10 +63,15 @@ export default class PropertyRepository {
         `;
       const { rows } = await this.pool.query(query, [id, ownerId, status]);
       if (rows.length == 0) {
-        return { error: "you cant update this propertey" };
+        throw new ApplicationError('You dont have access to update this property',400);
       }
       return rows[0];
-    } catch (error) {}
+    } catch (error) {
+        if(err instanceof ApplicationError){
+            throw error
+        }
+        throw new ApplicationError('something went wrong while updating the property',400)
+    }
   }
 
 
@@ -72,6 +83,8 @@ export default class PropertyRepository {
         `;
        await this.pool.query(query, [id, ownerId]);
  
-    } catch (error) {}
+    } catch (error) {
+        throw new ApplicationError('something went wrong while deleting the property',400)
+    }
   }
 }

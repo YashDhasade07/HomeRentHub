@@ -1,5 +1,5 @@
 import BookingRepository from "./bookingModel.js";
-
+import ApplicationError from "../../middlewares/ApplicationError.js";
 export default class BookingController {
   constructor() {
     this.bookingRepository = new BookingRepository();
@@ -20,7 +20,13 @@ export default class BookingController {
       } else {
         res.send("login as renter first");
       }
-    } catch (error) {}
+    } catch (error) {
+        console.log(error);
+        if(error instanceof ApplicationError){
+        next(error)
+        }
+        next(new ApplicationError('something went wrong while booking',400))
+    }
   }
 
 
@@ -34,31 +40,50 @@ export default class BookingController {
       } else {
         res.send("login as renter first");
       }
-    } catch (error) {}
+    } catch (error) {
+        console.log(error);
+        if(error instanceof ApplicationError){
+        next(error)
+        }
+        next(new ApplicationError('something went wrong while getting your bookings',400))
+    }
   }
 
   async getBookingRequests(req, res, next) {
     try {
       if (req.user.role == "owner") {
         let ownerId = req.user.userId;
-        let requests =await this.bookingRepository.getBookingRequests(ownerId);
+        let requests = await this.bookingRepository.getBookingRequests(ownerId);
         res.json(requests);
       } else {
         res.send("login as owner first");
       }
-    } catch (error) {}
+    } catch (error) {
+        console.log(error);
+        if(error instanceof ApplicationError){
+        next(error)
+        }
+        next(new ApplicationError('something went wrong while getting your booking requests',400))
+    }
   }
-
+  
   async updateBookingRequests(req, res, next) {
     try {
       if (req.user.role == "owner") {
         let ownerId = req.user.userId;
-        let {status} = req.body;
-        let requests =await this.bookingRepository.updateBookingRequests(ownerId,status);
+        let {bookingId,status} = req.body;
+        console.log({bookingId,status,ownerId});
+        let requests =await this.bookingRepository.updateBookingRequests(ownerId,bookingId,status);
         res.json(requests);
       } else {
         res.send("login as owner first");
       }
-    } catch (error) {}
+    } catch (error) {
+        console.log(error);
+        if(error instanceof ApplicationError){
+        next(error)
+        }
+        next(new ApplicationError('something went wrong while updating your booking status',400))
+    }
   }
 }

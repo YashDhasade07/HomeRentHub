@@ -1,5 +1,5 @@
 import pool from "../../config/postgres.js";
-
+import ApplicationError from "../../middlewares/ApplicationError.js";
 export default class UserRepository{
     constructor(){
         this.pool = pool;
@@ -14,7 +14,7 @@ export default class UserRepository{
             const values = [name, role, email, hashedPass];
             await this.pool.query(query,values)
         } catch (error) {
-            
+            throw new ApplicationError('something went wrong while user registration',400)
         }
     }
 
@@ -28,11 +28,14 @@ export default class UserRepository{
     
             const {rows} = await this.pool.query(query,[email]);
             if(!rows.length){
-                throw new Error('user not found')
+                throw new ApplicationError('User not found',40)
             }
             return rows[0];
         } catch (error) {
-            
+            if(error instanceof ApplicationError){
+                throw error
+            }
+            throw new ApplicationError('something went wrong while logging in',400)
         }
     }
 

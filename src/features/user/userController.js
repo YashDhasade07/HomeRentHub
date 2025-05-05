@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import UserRepository from "./userModel.js";
+import ApplicationError from "../../middlewares/ApplicationError.js";
 export default class UserController {
   constructor() {
     this.userRepository = new UserRepository();
@@ -12,7 +13,13 @@ export default class UserController {
       let hashedPass = await bcrypt.hash(password, 10);
       await this.userRepository.registerUser(name, role, email, hashedPass);
       res.send("User Registered Sucessfully");
-    } catch (error) {}
+    } catch (error) {
+        console.log(error);
+        if(error instanceof ApplicationError){
+            next(error)
+        }
+        next(new ApplicationError('something went wrong while user registration',400))
+    }
   }
 
   async loginUser(req, res, next) {
@@ -28,8 +35,14 @@ export default class UserController {
         );
         res.send(token);
       } else {
-        res.send("Credentials are incorrect");
+        throw new ApplicationError('incorrect credentials',400);
       }
-    } catch (error) {}
+    } catch (error) {
+        console.log(error);
+        if(error instanceof ApplicationError){
+            next(error)
+        }
+        next(new ApplicationError('something went wrong while logging in',400))
+    }
   }
 }
